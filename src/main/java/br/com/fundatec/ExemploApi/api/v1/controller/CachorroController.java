@@ -3,6 +3,8 @@ package br.com.fundatec.ExemploApi.api.v1.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +50,7 @@ public class CachorroController {
 		
 	}
 	@PostMapping("/v1/cachorros")
-	public ResponseEntity<CachorroOutputDto> incluirCachorro(@RequestBody CachorroInputDto cachorroInputDto){
+	public ResponseEntity<CachorroOutputDto> incluirCachorro(@Valid @RequestBody CachorroInputDto cachorroInputDto){
 		Cachorro cachorro=cachorroMapper.mapearCachorro(cachorroInputDto);
 		cachorro = cachorroService.incluir(cachorro);
 		CachorroOutputDto cachorroOutputDto = cachorroMapper.mapearCachorroOutputDto(cachorro);
