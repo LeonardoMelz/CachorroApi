@@ -44,7 +44,7 @@ public class IncluirCachorroTest {
 		.body("{" + 
 				"	\"nome\": \"urso\"," + 
 				"	\"raca\": \"Pastor Belga\"," + 
-				"	\"porte\": \"grande\"," + 
+				"	\"porte\": \"Grande\"," + 
 				"	\"idade\": 2," + 
 				"    \"cpc\" : \"012.345.678-90\" " +
 				"}")
@@ -54,7 +54,7 @@ public class IncluirCachorroTest {
 	.assertThat()
 	.body("nome",Matchers.equalTo("urso"))
 	.body("raca",Matchers.equalTo("Pastor Belga"))
-	.body("porte",Matchers.equalTo("grande"))
+	.body("porte",Matchers.equalTo("Grande"))
 	.body("idade",Matchers.equalTo(2))
 	.body("id",Matchers.greaterThan(0))
 	.statusCode(HttpStatus.CREATED.value());
@@ -73,7 +73,7 @@ public class IncluirCachorroTest {
 		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 	.body("{" + 
 				"	\"raca\": \"Pastor Belga\"," + 
-				"	\"porte\": \"grande\"," + 
+				"	\"porte\": \"Grande\"," + 
 				"	\"idade\": 2" + 
 				"}")
 	.when()
@@ -82,7 +82,8 @@ public class IncluirCachorroTest {
 	.assertThat()
 	.statusCode(HttpStatus.BAD_REQUEST.value())
 	.body("errors[0].defaultMessage",Matchers.equalTo("O campo nome não foi preenchido"));
-	
+		Assert.assertTrue(cachorroRepository.count() == 0);
+
 
 		
 	}
@@ -95,7 +96,7 @@ public class IncluirCachorroTest {
 	.body("{" + 
 		        "   \"nome\": \"urso\","+
 				"	\"raca\": \"Pastor Belga\"," + 
-				"	\"porte\": \"grande\"," + 
+				"	\"porte\": \"Grande\"," + 
 				"	\"idade\": 2," + 
 				"    \"cpc\": \"cpc\" "+
 				"}")
@@ -105,8 +106,58 @@ public class IncluirCachorroTest {
 	.assertThat()
 	.statusCode(HttpStatus.BAD_REQUEST.value())
 	.body("errors[0].defaultMessage",Matchers.equalTo("Campo cpc inválido"));
-	
+		Assert.assertTrue(cachorroRepository.count() == 0);
 
+	}
+	
+	@Test
+	public void deveValidarOpcaoValidaParaPorteDoCachorro() {
+		RestAssured
+		.given()
+		.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+		.body("{" + 
+		        "   \"nome\": \"urso\","+
+				"	\"raca\": \"Pastor Belga\"," + 
+				"	\"porte\": \"seila\"," + 
+				"	\"idade\": 2," + 
+				"    \"cpc\": \"012.345.678-90\" "+
+				"}"
+				)
+		.when()
+		.post("/v1/cachorros")
+		.then()
+		.assertThat()
+		.statusCode(HttpStatus.BAD_REQUEST.value())
+		.body("errors[0].defaultMessage", Matchers.equalTo("Campo porte invalido"));
+		Assert.assertTrue(cachorroRepository.count() == 0);
+		
+		
+	}
+	
+	@Test
+	public void deveValidarLetraMaiusculaParaPorteDoCachorro() {
+		RestAssured
+		.given()
+		.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+		.body("{" + 
+		        "   \"nome\": \"urso\","+
+				"	\"raca\": \"Pastor Belga\"," + 
+				"	\"porte\": \"grande\"," + 
+				"	\"idade\": 2," + 
+				"    \"cpc\": \"012.345.678-90\" "+
+				"}"
+				)
+		.when()
+		.post("/v1/cachorros")
+		.then()
+		.assertThat()
+		.statusCode(HttpStatus.BAD_REQUEST.value())
+		.body("errors[0].defaultMessage", Matchers.equalTo("Campo porte invalido"));
+		Assert.assertTrue(cachorroRepository.count() == 0);
+		
+		
 	}
 	
 }

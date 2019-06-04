@@ -28,24 +28,13 @@ public class CachorroController {
 	public CachorroController(CachorroService cachorroService, CachorroMapper cachorroMapper) {
 		this.cachorroService = cachorroService;
 		this.cachorroMapper = cachorroMapper;
-	}
+		}
 
 
 	@GetMapping("/v1/cachorros")
-	public ResponseEntity<List<CachorroOutputDto>> getCachorros() {
-//		List<CachorroDto> listaCachorro = new ArrayList<>();
-//		listaCachorro.add(new CachorroDto("Bob", "Poodle", "Médio", 15));
-//		listaCachorro.add(new CachorroDto("Goku", "Vira-Lata", "Grande", 3));
-//		listaCachorro.add(new CachorroDto("Rex", "Pitbull", "Grande", 4));
-//		listaCachorro.add(new CachorroDto("Bilu", "Salsichinha", "Pequeno", 2));
-//		listaCachorro.add(new CachorroDto("Amarelo", "Golden Retriever", "Grande", 1));
-		
-		
+	public ResponseEntity<List<CachorroOutputDto>> getCachorros() {		
 		List<Cachorro> listaCachorro = cachorroService.listarTodos();
 		List<CachorroOutputDto> listaCachorroDto = cachorroMapper.mapearListaCachorroOutputDto(listaCachorro);
-		
-		
-		
 		return ResponseEntity.status(HttpStatus.OK).body(listaCachorroDto);
 		
 	}
@@ -54,11 +43,7 @@ public class CachorroController {
 		Cachorro cachorro=cachorroMapper.mapearCachorro(cachorroInputDto);
 		cachorro = cachorroService.incluir(cachorro);
 		CachorroOutputDto cachorroOutputDto = cachorroMapper.mapearCachorroOutputDto(cachorro);
-		
-		
 		return ResponseEntity.status(HttpStatus.CREATED).body(cachorroOutputDto);
 	}
-
-	
 
 }

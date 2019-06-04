@@ -37,13 +37,15 @@ public class ListarCachorroTest {
 		cachorroRepository.save(new Cachorro(null, "Rex", "Pitbull", "Grande", 4));
 		
 		RestAssured
-			.get("/v1/cachorros")
-			.then()
-			.body("nome", Matchers.hasItems("Bob", "Rex"))
-			.body("raca", Matchers.hasItems("Poodle", "Pitbull"))
-			.body("porte", Matchers.hasItems("Médio", "Grande"))
-			.body("idade", Matchers.hasItems(15, 4))
-			.statusCode(HttpStatus.OK.value());
+		.given()
+		.when()
+		.get("/v1/cachorros")
+		.then()
+		.body("nome", Matchers.hasItems("Bob", "Rex"))
+		.body("raca", Matchers.hasItems("Poodle", "Pitbull"))
+		.body("porte", Matchers.hasItems("Médio", "Grande"))
+		.body("idade", Matchers.hasItems(15, 4))
+		.statusCode(HttpStatus.OK.value());
 	}
 
 }

@@ -6,6 +6,7 @@ import javax.validation.constraints.Pattern;
 public class CachorroInputDto {
 	private String nome; 
 	private String raca;
+	@Pattern(regexp = "^Pequeno$|^Medio$|^Grande$" , message = "Campo porte invalido")
 	private String porte;
 	private Integer idade;	
 	@Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$", message = "Campo cpc inválido")
