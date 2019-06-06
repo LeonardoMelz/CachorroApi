@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,7 +46,7 @@ public class CachorroController {
 
 		try {
 			Cachorro cachorro = cachorroMapper.mapearCachorro(cachorroInputDto);
-			cachorro = cachorroService.incluir(cachorro);
+			cachorro = cachorroService.salvar(cachorro);
 			CachorroOutputDto cachorroOutputDto = cachorroMapper.mapearCachorroOutputDto(cachorro);
 			return ResponseEntity.status(HttpStatus.CREATED).body(cachorroOutputDto);
 		} catch (IllegalArgumentException e) {
@@ -56,4 +59,13 @@ public class CachorroController {
 
 	}
 
+	@PutMapping("/v1/cachorros/{id}")
+	public ResponseEntity<?> AlterarCachorro(@PathVariable Long id,@RequestBody CachorroInputDto cachorroInputDto){
+		Cachorro cachorro = cachorroMapper.mapearCachorro(cachorroInputDto);
+		cachorro.setId(id);
+		cachorro = cachorroService.salvar(cachorro);
+		CachorroOutputDto cachorroOutputDto = cachorroMapper.mapearCachorroOutputDto(cachorro);
+		return ResponseEntity.ok(cachorroOutputDto);
+		
+	}
 }
