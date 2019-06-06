@@ -16,7 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import br.com.fundatec.ExemploApi.entity.PorteParametro;
 import br.com.fundatec.ExemploApi.repository.CachorroRepository;
+import br.com.fundatec.ExemploApi.repository.PorteParametroRepository;
 import io.restassured.RestAssured;
 
 @RunWith(SpringRunner.class)
@@ -27,13 +29,20 @@ public class IncluirCachorroTest {
 	private int port;
 	@Autowired
 	private CachorroRepository cachorroRepository;
-
+	@Autowired
+	private PorteParametroRepository porteParametroRepository;
+	
 	@Before
 	public void setUp() {
 		RestAssured.port = port;
 		RestAssured.baseURI = "http://localhost";
 		cachorroRepository.deleteAll();
+		porteParametroRepository.deleteAll();
+		porteParametroRepository.save(new PorteParametro("Pequeno"));
+		porteParametroRepository.save(new PorteParametro("Medio"));
+		porteParametroRepository.save(new PorteParametro("Grande"));
 	}
+	
 
 	@Test
 	public void deveIncluirCachorro() {
@@ -110,30 +119,7 @@ public class IncluirCachorroTest {
 
 	}
 	
-	@Test
-	public void deveValidarOpcaoValidaParaPorteDoCachorro() {
-		RestAssured
-		.given()
-		.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-		.body("{" + 
-		        "   \"nome\": \"urso\","+
-				"	\"raca\": \"Pastor Belga\"," + 
-				"	\"porte\": \"seila\"," + 
-				"	\"idade\": 2," + 
-				"    \"cpc\": \"012.345.678-90\" "+
-				"}"
-				)
-		.when()
-		.post("/v1/cachorros")
-		.then()
-		.assertThat()
-		.statusCode(HttpStatus.BAD_REQUEST.value())
-		.body("errors[0].defaultMessage", Matchers.equalTo("Campo porte invalido"));
-		Assert.assertTrue(cachorroRepository.count() == 0);
-		
-		
-	}
+	
 	
 	@Test
 	public void deveValidarLetraMaiusculaParaPorteDoCachorro() {
@@ -153,8 +139,9 @@ public class IncluirCachorroTest {
 		.post("/v1/cachorros")
 		.then()
 		.assertThat()
-		.statusCode(HttpStatus.BAD_REQUEST.value())
-		.body("errors[0].defaultMessage", Matchers.equalTo("Campo porte invalido"));
+		.statusCode(HttpStatus.EXPECTATION_FAILED.value())
+		.body("mensagem", Matchers.equalTo("Campo porte invalido"));
+		
 		Assert.assertTrue(cachorroRepository.count() == 0);
 		
 		
