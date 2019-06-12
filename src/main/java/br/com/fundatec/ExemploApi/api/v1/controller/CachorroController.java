@@ -8,6 +8,7 @@ import javax.websocket.server.PathParam;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,12 +61,19 @@ public class CachorroController {
 	}
 
 	@PutMapping("/v1/cachorros/{id}")
-	public ResponseEntity<?> AlterarCachorro(@PathVariable Long id,@RequestBody CachorroInputDto cachorroInputDto){
+	public ResponseEntity<?> AlterarCachorro(@PathVariable Long id, @RequestBody CachorroInputDto cachorroInputDto) {
 		Cachorro cachorro = cachorroMapper.mapearCachorro(cachorroInputDto);
 		cachorro.setId(id);
 		cachorro = cachorroService.salvar(cachorro);
 		CachorroOutputDto cachorroOutputDto = cachorroMapper.mapearCachorroOutputDto(cachorro);
 		return ResponseEntity.ok(cachorroOutputDto);
-		
+
+	}
+
+	@DeleteMapping("v1/cachorros/{id}")
+	public ResponseEntity<?> ExcluirCachorro(@PathVariable Long id) {
+		cachorroService.deletar(id);
+		return ResponseEntity.ok().build();
+
 	}
 }

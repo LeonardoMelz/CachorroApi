@@ -22,30 +22,27 @@ public class CachorroService {
 	public List<Cachorro> listarTodos() {
 		return (List<Cachorro>) cachorroRepository.findAll();
 	}
-	
+
 	public Cachorro salvar(Cachorro cachorro) {
 		validarSalvarCachorro(cachorro);
 		return cachorroRepository.save(cachorro);
-		
+
 	}
-	
+
 	private void validarSalvarCachorro(Cachorro cachorro) {
 		validarPorte(cachorro);
-		
+
 	}
-	
+
 	public void validarPorte(Cachorro cachorro) {
-		if (!porteParametroService.porteValido(cachorro.getPorte())){
+		if (!porteParametroService.porteValido(cachorro.getPorte())) {
 			throw new IllegalArgumentException("Campo porte invalido");
 		}
-		
-		
 	}
-	
-	
 
-	
+	public void deletar(long id) {
+		cachorroRepository.deleteById(id);
 
-	
+	}
 
 }
