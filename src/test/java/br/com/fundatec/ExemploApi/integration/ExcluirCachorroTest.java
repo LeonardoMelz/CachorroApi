@@ -1,5 +1,6 @@
 package br.com.fundatec.ExemploApi.integration;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,12 +56,27 @@ public class ExcluirCachorroTest {
 
 		Cachorro cachorroDeletado = cachorroRepository.findById(cachorro.getId()).orElse(null);
 		Assert.assertNull(cachorroDeletado);
-		Assert.assertTrue(cachorroRepository.count() == 0);
-	
-	
-
-	
-	
 	
 	}
+	
+	@Test
+	
+	public void verificaSeExisteCachorro() {
+
+		RestAssured
+		.given()
+		.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+		.when()
+		.delete("/v1/cachorros/{id}",8)
+		.then ()
+		.assertThat()
+		.statusCode(HttpStatus.NOT_FOUND.value())
+		.body("mensagem",Matchers.equalTo("Não exite chachorro com esse id"));
+			
+		
+	}
+	
+	
+	
 }

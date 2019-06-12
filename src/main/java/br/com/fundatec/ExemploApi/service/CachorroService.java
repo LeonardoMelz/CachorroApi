@@ -41,8 +41,11 @@ public class CachorroService {
 	}
 
 	public void deletar(long id) {
-		cachorroRepository.deleteById(id);
-
+		if (cachorroRepository.existsById(id)) {
+			cachorroRepository.deleteById(id);
+		} else {
+			throw new IllegalArgumentException("Não exite chachorro com esse id");
+		}
 	}
 
 }

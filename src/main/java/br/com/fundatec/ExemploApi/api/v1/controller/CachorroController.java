@@ -72,8 +72,16 @@ public class CachorroController {
 
 	@DeleteMapping("v1/cachorros/{id}")
 	public ResponseEntity<?> ExcluirCachorro(@PathVariable Long id) {
-		cachorroService.deletar(id);
-		return ResponseEntity.ok().build();
+		try {
+			cachorroService.deletar(id);
+			return ResponseEntity.ok().build();
 
+		} catch (IllegalArgumentException e) {
+			ErroDto erroDto = new ErroDto(e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erroDto);
+		} catch (Exception e) {
+			ErroDto erroDto = new ErroDto(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erroDto);
+		}
 	}
 }
