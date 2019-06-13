@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
+import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,10 +39,21 @@ public class CachorroController {
 	public ResponseEntity<List<CachorroOutputDto>> getCachorros() {
 		List<Cachorro> listaCachorro = cachorroService.listarTodos();
 		List<CachorroOutputDto> listaCachorroDto = cachorroMapper.mapearListaCachorroOutputDto(listaCachorro);
-		return ResponseEntity.status(HttpStatus.OK).body(listaCachorroDto);
+		return ResponseEntity.ok(listaCachorroDto);
 
 	}
-
+	
+	@GetMapping("/v1/cachorros/{id}")
+	public ResponseEntity<?> consultarCachorro(@PathVariable Long id){
+		try {
+			Cachorro cachorro = cachorroService.consultar(id);
+			CachorroOutputDto cachorroOutputDto = CachorroMapper.mapearCachorroOutputDto(cachorro);
+			return ResponseEntity.ok(cachorroOutputDto);
+		} catch (IllegalArgumentException e) {
+			ErroDto erroDto = new ErroDto(e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erroDto);
+		}	
+	}
 	@PostMapping("/v1/cachorros")
 	public ResponseEntity<?> incluirCachorro(@Valid @RequestBody CachorroInputDto cachorroInputDto) {
 

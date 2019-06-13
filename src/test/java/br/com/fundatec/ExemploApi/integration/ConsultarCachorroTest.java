@@ -16,7 +16,7 @@ import io.restassured.RestAssured;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ListarCachorroTest {
+public class ConsultarCachorroTest {
 	
 	@LocalServerPort
 	private int port;
@@ -46,6 +46,37 @@ public class ListarCachorroTest {
 		.body("porte", Matchers.hasItems("Médio", "Grande"))
 		.body("idade", Matchers.hasItems(15, 4))
 		.statusCode(HttpStatus.OK.value());
+	}
+	
+	@Test
+	public void deveRetornarUmCachorro() {
+		Cachorro cachorro = new Cachorro(null,"Son Goku","Sayajin Dog","Grande",4);
+		cachorroRepository.save(cachorro);
+		RestAssured
+		.when()
+		.get("/v1/cachorros/{id}",cachorro.getId())
+		.then()
+		.assertThat()
+		.statusCode(HttpStatus.OK.value())
+		.body("id",Matchers.equalTo(cachorro.getId().intValue())) 
+			.body("nome", Matchers.equalTo(cachorro.getNome()))
+			.body("raca", Matchers.equalTo(cachorro.getRaca()))
+			.body("porte", Matchers.equalTo(cachorro.getPorte()))
+			.body("idade", Matchers.equalTo(cachorro.getIdade().intValue()));
+		
+	}
+	
+	@Test
+	public void deveRetornarErroAoConsultarCachorroInexistente() {
+		
+		RestAssured
+		.when()
+		.get("/v1/cachorros/{id}",1903)
+		.then()
+		.assertThat()
+		.statusCode(HttpStatus.NOT_FOUND.value())
+		.body("mensagem",Matchers.equalTo("Não exite chachorro com esse id")); 
+			
 	}
 
 }

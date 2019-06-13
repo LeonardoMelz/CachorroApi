@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import br.com.fundatec.ExemploApi.entity.Cachorro;
-import br.com.fundatec.ExemploApi.entity.PorteParametro;
 import br.com.fundatec.ExemploApi.repository.CachorroRepository;
 import br.com.fundatec.ExemploApi.repository.PorteParametroRepository;
 import io.restassured.RestAssured;

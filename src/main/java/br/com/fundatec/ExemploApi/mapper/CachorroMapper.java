@@ -11,7 +11,7 @@ import br.com.fundatec.ExemploApi.entity.Cachorro;
 @Component
 public class CachorroMapper {
 
-	public CachorroOutputDto mapearCachorroOutputDto(Cachorro cachorro) {
+	public static CachorroOutputDto mapearCachorroOutputDto(Cachorro cachorro) {
 		return new CachorroOutputDto(
 				cachorro.getId(),
 				cachorro.getNome(), 

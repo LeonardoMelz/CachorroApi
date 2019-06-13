@@ -48,4 +48,10 @@ public class CachorroService {
 		}
 	}
 
+	public Cachorro consultar(Long id) {
+		
+		return cachorroRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Não exite chachorro com esse id"));
+	}
+
 }
