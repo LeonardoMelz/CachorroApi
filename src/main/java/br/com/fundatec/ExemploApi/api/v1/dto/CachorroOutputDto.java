@@ -7,6 +7,9 @@ public class CachorroOutputDto {
 	private String porte;
 	private Integer idade;
 	
+	
+
+
 	public CachorroOutputDto(Long id,String nome, String raca, String porte, Integer idade) {
 		this.id=id;
 		this.nome = nome;

@@ -4,21 +4,33 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.ManyToAny;
 
 @Entity
 public class Cachorro {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	private String nome;
+
 	private String raca;
+
 	private String porte;
+
 	private Integer idade;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "idPessoa")
+	private Pessoa pessoa;
+
 	public Cachorro() {
 	}
-	
+
 	public Cachorro(Long id, String nome, String raca, String porte, Integer idade) {
 		this.id = id;
 		this.nome = nome;
@@ -66,7 +78,13 @@ public class Cachorro {
 	public void setIdade(Integer idade) {
 		this.idade = idade;
 	}
-	
-	
-	
+
+	public Pessoa getPessoa() {
+		return pessoa;
+	}
+
+	public void setPessoa(Pessoa pessoa) {
+		this.pessoa = pessoa;
+	}
+
 }

@@ -10,10 +10,17 @@ public class CachorroInputDto {
 	private Integer idade;	
 	@Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$", message = "Campo cpc inválido")
 	private String cpc;
+	private Long idPessoa;
+	
+	
 	
 	
 	public String getCpc() {
 		return cpc;
+	}
+	
+	public void setIdPessoa(long idPessoa) {
+		this.idPessoa = idPessoa;
 	}
 	public void setCpc(String cpc) {
 		this.cpc = cpc;
@@ -43,6 +50,12 @@ public class CachorroInputDto {
 	}
 	public void setIdade(Integer idade) {
 		this.idade = idade;
+	}
+	public void setIdPessoa(Long idPessoa) {
+		this.idPessoa = idPessoa;
+	}
+	public Long getIdPessoa() {
+		return idPessoa;
 	}
 
 }

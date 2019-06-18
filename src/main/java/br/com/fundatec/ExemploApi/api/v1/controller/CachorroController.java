@@ -21,18 +21,25 @@ import br.com.fundatec.ExemploApi.api.v1.dto.CachorroOutputDto;
 import br.com.fundatec.ExemploApi.api.v1.dto.ErroDto;
 import br.com.fundatec.ExemploApi.api.v1.dto.CachorroInputDto;
 import br.com.fundatec.ExemploApi.entity.Cachorro;
+import br.com.fundatec.ExemploApi.entity.Pessoa;
 import br.com.fundatec.ExemploApi.mapper.CachorroMapper;
 import br.com.fundatec.ExemploApi.service.CachorroService;
+import br.com.fundatec.ExemploApi.service.PessoaService;
 
 @RestController
 public class CachorroController {
 
 	private CachorroService cachorroService;
 	private CachorroMapper cachorroMapper;
+	private PessoaService pessoaService;
 
-	public CachorroController(CachorroService cachorroService, CachorroMapper cachorroMapper) {
+	
+
+	public CachorroController(CachorroService cachorroService, CachorroMapper cachorroMapper,
+			PessoaService pessoaService) {
 		this.cachorroService = cachorroService;
 		this.cachorroMapper = cachorroMapper;
+		this.pessoaService = pessoaService;
 	}
 
 	@GetMapping("/v1/cachorros")
@@ -42,9 +49,9 @@ public class CachorroController {
 		return ResponseEntity.ok(listaCachorroDto);
 
 	}
-	
+
 	@GetMapping("/v1/cachorros/{id}")
-	public ResponseEntity<?> consultarCachorro(@PathVariable Long id){
+	public ResponseEntity<?> consultarCachorro(@PathVariable Long id) {
 		try {
 			Cachorro cachorro = cachorroService.consultar(id);
 			CachorroOutputDto cachorroOutputDto = CachorroMapper.mapearCachorroOutputDto(cachorro);
@@ -52,13 +59,18 @@ public class CachorroController {
 		} catch (IllegalArgumentException e) {
 			ErroDto erroDto = new ErroDto(e.getMessage());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erroDto);
-		}	
+		}
 	}
+
 	@PostMapping("/v1/cachorros")
 	public ResponseEntity<?> incluirCachorro(@Valid @RequestBody CachorroInputDto cachorroInputDto) {
 
 		try {
 			Cachorro cachorro = cachorroMapper.mapearCachorro(cachorroInputDto);
+			if (cachorroInputDto.getIdPessoa() != null) {
+			Pessoa pessoa = pessoaService.consultar(cachorroInputDto.getIdPessoa());
+			cachorro.setPessoa(pessoa);
+			}
 			cachorro = cachorroService.salvar(cachorro);
 			CachorroOutputDto cachorroOutputDto = cachorroMapper.mapearCachorroOutputDto(cachorro);
 			return ResponseEntity.status(HttpStatus.CREATED).body(cachorroOutputDto);

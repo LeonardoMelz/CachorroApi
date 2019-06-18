@@ -2,6 +2,8 @@ package br.com.fundatec.ExemploApi.integration;
 
 import static org.junit.Assert.assertArrayEquals;
 
+import java.util.List;
+
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -16,8 +18,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import br.com.fundatec.ExemploApi.entity.Cachorro;
+import br.com.fundatec.ExemploApi.entity.Pessoa;
 import br.com.fundatec.ExemploApi.entity.PorteParametro;
 import br.com.fundatec.ExemploApi.repository.CachorroRepository;
+import br.com.fundatec.ExemploApi.repository.PessoaRepository;
 import br.com.fundatec.ExemploApi.repository.PorteParametroRepository;
 import io.restassured.RestAssured;
 
@@ -31,7 +36,10 @@ public class IncluirCachorroTest {
 	private CachorroRepository cachorroRepository;
 	@Autowired
 	private PorteParametroRepository porteParametroRepository;
-	
+	@Autowired
+	private PessoaRepository pessoaRepository;
+
+	private Pessoa pessoa;
 	@Before
 	public void setUp() {
 		RestAssured.port = port;
@@ -41,8 +49,8 @@ public class IncluirCachorroTest {
 		porteParametroRepository.save(new PorteParametro("Pequeno"));
 		porteParametroRepository.save(new PorteParametro("Medio"));
 		porteParametroRepository.save(new PorteParametro("Grande"));
+		pessoa = pessoaRepository.save(new Pessoa(null, "Leonardo", 18));
 	}
-	
 
 	@Test
 	public void deveIncluirCachorro() {
@@ -55,7 +63,8 @@ public class IncluirCachorroTest {
 				"	\"raca\": \"Pastor Belga\"," + 
 				"	\"porte\": \"Grande\"," + 
 				"	\"idade\": 2," + 
-				"    \"cpc\" : \"012.345.678-90\" " +
+				"    \"cpc\" : \"012.345.678-90\"," +
+				"    \"idPessoa\":"+pessoa.getId() +
 				"}")
 	.when()
 	.post("/v1/cachorros")
@@ -68,83 +77,53 @@ public class IncluirCachorroTest {
 	.body("id",Matchers.greaterThan(0))
 	.statusCode(HttpStatus.CREATED.value());
 		
+		Cachorro cachorroIncluido = ((List<Cachorro>)cachorroRepository.findAll()).get(0);
+		
+		Assert.assertNotNull(cachorroIncluido.getPessoa());
+		Assert.assertEquals("urso", cachorroIncluido.getNome());
+		Assert.assertEquals("Pastor Belga", cachorroIncluido.getRaca());
+		Assert.assertEquals("Grande", cachorroIncluido.getPorte());
+		Assert.assertEquals(2, cachorroIncluido.getIdade().intValue());
 		Assert.assertTrue(cachorroRepository.count()>0);
 	
 	
 	
 	}
-	
+
 	@Test
 	public void deveValidarCachorroSemNome() {
-		RestAssured
-		.given()
-		.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-	.body("{" + 
-				"	\"raca\": \"Pastor Belga\"," + 
-				"	\"porte\": \"Grande\"," + 
-				"	\"idade\": 2" + 
-				"}")
-	.when()
-	.post("/v1/cachorros")
-	.then()
-	.assertThat()
-	.statusCode(HttpStatus.BAD_REQUEST.value())
-	.body("errors[0].defaultMessage",Matchers.equalTo("O campo nome não foi preenchido"));
+		RestAssured.given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.body("{" + "	\"raca\": \"Pastor Belga\"," + "	\"porte\": \"Grande\"," + "	\"idade\": 2" + "}")
+				.when().post("/v1/cachorros").then().assertThat().statusCode(HttpStatus.BAD_REQUEST.value())
+				.body("errors[0].defaultMessage", Matchers.equalTo("O campo nome não foi preenchido"));
 		Assert.assertTrue(cachorroRepository.count() == 0);
 
-
-		
 	}
+
 	@Test
 	public void deveValidarCpcInvalido() {
-		RestAssured
-		.given()
-		.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-	.body("{" + 
-		        "   \"nome\": \"urso\","+
-				"	\"raca\": \"Pastor Belga\"," + 
-				"	\"porte\": \"Grande\"," + 
-				"	\"idade\": 2," + 
-				"    \"cpc\": \"cpc\" "+
-				"}")
-	.when()
-	.post("/v1/cachorros")
-	.then()
-	.assertThat()
-	.statusCode(HttpStatus.BAD_REQUEST.value())
-	.body("errors[0].defaultMessage",Matchers.equalTo("Campo cpc inválido"));
+		RestAssured.given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.body("{" + "   \"nome\": \"urso\"," + "	\"raca\": \"Pastor Belga\"," + "	\"porte\": \"Grande\","
+						+ "	\"idade\": 2," + "    \"cpc\": \"cpc\" " + "}")
+				.when().post("/v1/cachorros").then().assertThat().statusCode(HttpStatus.BAD_REQUEST.value())
+				.body("errors[0].defaultMessage", Matchers.equalTo("Campo cpc inválido"));
 		Assert.assertTrue(cachorroRepository.count() == 0);
 
 	}
-	
-	
-	
+
 	@Test
 	public void deveValidarLetraMaiusculaParaPorteDoCachorro() {
-		RestAssured
-		.given()
-		.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-		.body("{" + 
-		        "   \"nome\": \"urso\","+
-				"	\"raca\": \"Pastor Belga\"," + 
-				"	\"porte\": \"grande\"," + 
-				"	\"idade\": 2," + 
-				"    \"cpc\": \"012.345.678-90\" "+
-				"}"
-				)
-		.when()
-		.post("/v1/cachorros")
-		.then()
-		.assertThat()
-		.statusCode(HttpStatus.EXPECTATION_FAILED.value())
-		.body("mensagem", Matchers.equalTo("Campo porte invalido"));
-		
+		RestAssured.given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.body("{" + "   \"nome\": \"urso\"," + "	\"raca\": \"Pastor Belga\"," + "	\"porte\": \"grande\","
+						+ "	\"idade\": 2," + "    \"cpc\": \"012.345.678-90\" " + "}")
+				.when().post("/v1/cachorros").then().assertThat().statusCode(HttpStatus.EXPECTATION_FAILED.value())
+				.body("mensagem", Matchers.equalTo("Campo porte invalido"));
+
 		Assert.assertTrue(cachorroRepository.count() == 0);
-		
-		
+
 	}
-	
+
 }
