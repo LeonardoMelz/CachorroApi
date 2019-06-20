@@ -62,6 +62,14 @@ public class CachorroController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erroDto);
 		}
 	}
+	
+	@GetMapping("/v1/cachorros/exercicio")
+	public ResponseEntity<List<CachorroOutputDto>> getCachorro(@RequestParam String nome, @RequestParam Integer idadeMin, @RequestParam Integer idadeMax) {	
+		List<Cachorro> listaCachorro = cachorroService.listaNomeIdadeMinMax(nome,idadeMin,idadeMax);
+		List<CachorroOutputDto> listaCachorroDto = cachorroMapper.mapearListaCachorroOutputDto(listaCachorro);
+		return ResponseEntity.ok(listaCachorroDto);
+
+	}
 
 	@PostMapping("/v1/cachorros")
 	public ResponseEntity<?> incluirCachorro(@Valid @RequestBody CachorroInputDto cachorroInputDto) {

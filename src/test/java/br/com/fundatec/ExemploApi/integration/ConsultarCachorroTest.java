@@ -88,5 +88,29 @@ public class ConsultarCachorroTest {
 			Assert.assertTrue(portesEsperados.contains(cachorroOutputDto.getPorte()));
 			Assert.assertTrue(idadeEsperados.contains(cachorroOutputDto.getIdade()));
 		}
-	}
+		}
+		
+		@Test
+		public void deveFiltrarCachorroPeloNomeIdade() {
+			cachorroRepository.save(new Cachorro(null, "Bob", "Poodle", "Médio", 15));
+			cachorroRepository.save(new Cachorro(null, "Rex", "Pitbull", "Grande", 4));
+			cachorroRepository.save(new Cachorro(null, "Roberto", "Chihuahua", "Pequeno", 10));
+	
+		CachorroOutputDto[] resultado = RestAssured.given().when().get("/v1/cachorros/exercicio?nome=ob&idadeMin=1&idadeMax=16").then().assertThat()
+				.statusCode(HttpStatus.OK.value()).extract().as(CachorroOutputDto[].class);
+		
+		List<String> nomesEsperados = Arrays.asList("Bob", "Roberto");
+		List<String> racasEsperados = Arrays.asList("Poodle", "Chihuahua");
+		List<String> portesEsperados = Arrays.asList("Médio", "Pequeno");
+		List<Integer> idadeEsperados = Arrays.asList(15, 10);
+		
+		for (CachorroOutputDto cachorroOutputDto : resultado) {
+			Assert.assertTrue(racasEsperados.contains(cachorroOutputDto.getNome()));
+			Assert.assertTrue(racasEsperados.contains(cachorroOutputDto.getRaca()));
+			Assert.assertTrue(portesEsperados.contains(cachorroOutputDto.getPorte()));
+			Assert.assertTrue(idadeEsperados.contains(cachorroOutputDto.getIdade()));
+		}
+
+ }
 }
+

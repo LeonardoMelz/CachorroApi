@@ -22,6 +22,10 @@ public class CachorroService {
 	public List<Cachorro> listar(String nome) {
 		return (List<Cachorro>) cachorroRepository.findByNomeContainingIgnoreCase(nome);
 	}
+	
+	public List<Cachorro> listaNomeIdadeMinMax(String nome, Integer idadeMin , Integer idadeMax) {
+		return (List<Cachorro>) cachorroRepository.findByNomeAndIdadeBetween(nome, idadeMin, idadeMax);
+	}
 
 	public Cachorro salvar(Cachorro cachorro) {
 		validarSalvarCachorro(cachorro);
